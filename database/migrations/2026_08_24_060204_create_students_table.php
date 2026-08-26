@@ -15,12 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('email');
+            $table->string('gender');
+            $table->string('birthday');
+             $table->string('email')->inique();
             $table->string('address');
             $table->string('number');
             $table->string('yr_level');
             $table->string('program');
-
             $table->timestamps();
         });
     }
