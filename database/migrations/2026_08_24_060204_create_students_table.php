@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('gender');
             $table->string('birthday');
-             $table->string('email')->inique();
+             $table->string('email')->unique();
             $table->string('address');
             $table->string('number');
             $table->string('yr_level');
