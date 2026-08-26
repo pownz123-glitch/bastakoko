@@ -2,29 +2,32 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\fastories\Hasfactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Student extends Model 
+class Student extends Model
 {
-    use Hasfactory;
+    use HasFactory;
 
-    protected $fillable =[
+    protected $fillable = [
         'first_name',
         'last_name',
         'email',
         'program',
         'yr_level',
+        'birthday',
     ];
 
-    protected $casts =[
-        'birthday'=> 'date',
+    protected $casts = [
+        'birthday' => 'date',
     ];
-    protected $appends =[
-        'age'
+
+    protected $appends = [
+        'age',
     ];
-    public function getAgeAttribute(){
+
+    public function getAgeAttribute()
+    {
         return $this->birthday?->age;
     }
 }

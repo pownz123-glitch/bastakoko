@@ -10,33 +10,29 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class StudentFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Student::class;
+
     public function definition(): array
     {
         return [
-
-        'first_name' => fake()->name(),
-        'last_name' => fake()->name(),
-        'email' => fake()->unique()->safeEmail(),
-        'program' => fake()->randomElement([
-            'BSIS',
-            'BSCS',
-            'BSIT'
-        ]),
-
-        'gender' => fake()->randomElement([
-            'male',
-            'female'
-        ]),
-
-        'birthday' => fake()
-        ->dataTimeBetwwen('-25 years', '-17 years')
-        ->format('Y-m-d'),
-      'yr_level'=> fake()->numberBetween(1,4)
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'program' => fake()->randomElement([
+                'BSIS',
+                'BSCS',
+                'BSIT',
+            ]),
+            'gender' => fake()->randomElement([
+                'male',
+                'female',
+            ]),
+            'address' => fake()->address(),
+            'number' => fake()->phoneNumber(),
+            'birthday' => fake()
+                ->dateTimeBetween('-25 years', '-17 years')
+                ->format('Y-m-d'),
+            'yr_level' => fake()->numberBetween(1, 4),
         ];
     }
 }
