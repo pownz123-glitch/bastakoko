@@ -21,6 +21,7 @@ class StudentFactory extends Factory
 
         'first_name' => fake()->name(),
         'last_name' => fake()->name(),
+        'email' => fake()->unique()->safeEmail(),
         'program' => fake()->randomElement([
             'BSIS',
             'BSCS',
