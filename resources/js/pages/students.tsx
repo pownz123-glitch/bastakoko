@@ -3,7 +3,12 @@ import { Trash2, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 
@@ -51,11 +56,15 @@ export default function Students() {
     const [studentsList, setStudentsList] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+    const [selectedStudent, setSelectedStudent] = useState<Student | null>(
+        null,
+    );
     const [showModal, setShowModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchType, setSearchType] = useState<'name' | 'id' | 'program' | 'year'>('name');
+    const [searchType, setSearchType] = useState<
+        'name' | 'id' | 'program' | 'year'
+    >('name');
     const [searchQuery, setSearchQuery] = useState('');
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [submitting, setSubmitting] = useState(false);
@@ -102,13 +111,13 @@ export default function Students() {
                 },
                 body: JSON.stringify(formData),
             });
-            
+
             if (!response.ok) {
                 const errorData = await response.json();
 
                 throw new Error(errorData.message || 'Failed to add student');
             }
-            
+
             const newStudent = await response.json();
             setStudentsList([...studentsList, newStudent]);
             setFormData(initialFormData);
@@ -127,21 +136,23 @@ export default function Students() {
 
     const confirmDelete = async () => {
         if (!studentToDelete) {
-return;
-}
-        
+            return;
+        }
+
         try {
             setDeleting(studentToDelete);
             setError(null);
             const response = await fetch(`/api/students/${studentToDelete}`, {
                 method: 'DELETE',
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to delete student');
             }
-            
-            setStudentsList(studentsList.filter(s => s.id !== studentToDelete));
+
+            setStudentsList(
+                studentsList.filter((s) => s.id !== studentToDelete),
+            );
             setShowModal(false);
             setShowDeleteConfirm(false);
             setStudentToDelete(null);
@@ -154,16 +165,16 @@ return;
 
     const filteredStudents = studentsList.filter((student) => {
         if (!searchQuery.trim()) {
-return true;
-}
-        
+            return true;
+        }
+
         const query = searchQuery.toLowerCase();
 
         switch (searchType) {
             case 'name':
-                return (
-                    `${student.first_name} ${student.last_name}`.toLowerCase().includes(query)
-                );
+                return `${student.first_name} ${student.last_name}`
+                    .toLowerCase()
+                    .includes(query);
             case 'id':
                 return student.id.toString().includes(query);
             case 'program':
@@ -189,11 +200,16 @@ return true;
                     <div>
                         <h1 className="text-3xl font-bold">Students</h1>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Showing {filteredStudents.length} student{filteredStudents.length !== 1 ? 's' : ''}
+                            Showing {filteredStudents.length} student
+                            {filteredStudents.length !== 1 ? 's' : ''}
                         </p>
                     </div>
                     <div className="flex gap-2">
-                        <Button onClick={() => setShowAddModal(true)} className="gap-2" disabled={submitting}>
+                        <Button
+                            onClick={() => setShowAddModal(true)}
+                            className="gap-2"
+                            disabled={submitting}
+                        >
                             <Plus className="h-4 w-4" />
                             Add Student
                         </Button>
@@ -215,7 +231,10 @@ return true;
                     <select
                         value={searchType}
                         onChange={(e) => {
-                            setSearchType(e.target.value as 'name' | 'id' | 'program' | 'year');
+                            setSearchType(
+                                e.target.value as
+                                    'name' | 'id' | 'program' | 'year',
+                            );
                             setCurrentPage(1);
                         }}
                         className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
@@ -267,16 +286,20 @@ return true;
                                     <div className="flex items-center justify-between gap-4">
                                         <div className="flex-1">
                                             <div className="font-semibold text-gray-900 dark:text-white">
-                                                {student.first_name} {student.last_name}
+                                                {student.first_name}{' '}
+                                                {student.last_name}
                                             </div>
                                             <div className="flex flex-wrap gap-3 text-sm text-gray-600 dark:text-gray-400">
-                                                <span className="font-mono">ID: {student.id}</span>
+                                                <span className="font-mono">
+                                                    ID: {student.id}
+                                                </span>
                                                 <span>{student.email}</span>
                                                 <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-900 dark:bg-blue-900 dark:text-blue-100">
                                                     {student.program || 'N/A'}
                                                 </span>
                                                 <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-900 dark:bg-green-900 dark:text-green-100">
-                                                    Year {student.yr_level || 'N/A'}
+                                                    Year{' '}
+                                                    {student.yr_level || 'N/A'}
                                                 </span>
                                             </div>
                                         </div>
@@ -289,9 +312,13 @@ return true;
                                                 variant="destructive"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleDeleteStudent(student.id);
+                                                    handleDeleteStudent(
+                                                        student.id,
+                                                    );
                                                 }}
-                                                disabled={deleting === student.id}
+                                                disabled={
+                                                    deleting === student.id
+                                                }
                                             >
                                                 {deleting === student.id ? (
                                                     <Spinner className="h-4 w-4" />
@@ -321,7 +348,11 @@ return true;
                                         First
                                     </Button>
                                     <Button
-                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        onClick={() =>
+                                            setCurrentPage((prev) =>
+                                                Math.max(1, prev - 1),
+                                            )
+                                        }
                                         disabled={currentPage === 1 || loading}
                                         variant="outline"
                                         size="sm"
@@ -332,62 +363,102 @@ return true;
                                         {(() => {
                                             const pages = [];
                                             const maxButtons = 5;
-                                            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-                                            const endPage = Math.min(totalPages, startPage + maxButtons - 1);
-                                            
-                                            if (endPage - startPage < maxButtons - 1) {
-                                                startPage = Math.max(1, endPage - maxButtons + 1);
+                                            let startPage = Math.max(
+                                                1,
+                                                currentPage -
+                                                    Math.floor(maxButtons / 2),
+                                            );
+                                            const endPage = Math.min(
+                                                totalPages,
+                                                startPage + maxButtons - 1,
+                                            );
+
+                                            if (
+                                                endPage - startPage <
+                                                maxButtons - 1
+                                            ) {
+                                                startPage = Math.max(
+                                                    1,
+                                                    endPage - maxButtons + 1,
+                                                );
                                             }
-                                            
+
                                             if (startPage > 1) {
                                                 pages.push(1);
 
                                                 if (startPage > 2) {
-pages.push('...');
-}
+                                                    pages.push('...');
+                                                }
                                             }
-                                            
-                                            for (let i = startPage; i <= endPage; i++) {
+
+                                            for (
+                                                let i = startPage;
+                                                i <= endPage;
+                                                i++
+                                            ) {
                                                 pages.push(i);
                                             }
-                                            
+
                                             if (endPage < totalPages) {
                                                 if (endPage < totalPages - 1) {
-pages.push('...');
-}
+                                                    pages.push('...');
+                                                }
 
                                                 pages.push(totalPages);
                                             }
-                                            
-                                            return pages.map((page, index) => (
+
+                                            return pages.map((page, index) =>
                                                 page === '...' ? (
-                                                    <span key={index} className="px-2 py-1 text-gray-500">
+                                                    <span
+                                                        key={index}
+                                                        className="px-2 py-1 text-gray-500"
+                                                    >
                                                         •••
                                                     </span>
                                                 ) : (
                                                     <Button
                                                         key={page}
-                                                        onClick={() => setCurrentPage(page as number)}
-                                                        variant={currentPage === page ? 'default' : 'outline'}
+                                                        onClick={() =>
+                                                            setCurrentPage(
+                                                                page as number,
+                                                            )
+                                                        }
+                                                        variant={
+                                                            currentPage === page
+                                                                ? 'default'
+                                                                : 'outline'
+                                                        }
                                                         size="sm"
                                                     >
                                                         {page}
                                                     </Button>
-                                                )
-                                            ));
+                                                ),
+                                            );
                                         })()}
                                     </div>
                                     <Button
-                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                        disabled={currentPage === totalPages || loading}
+                                        onClick={() =>
+                                            setCurrentPage((prev) =>
+                                                Math.min(totalPages, prev + 1),
+                                            )
+                                        }
+                                        disabled={
+                                            currentPage === totalPages ||
+                                            loading
+                                        }
                                         variant="outline"
                                         size="sm"
                                     >
                                         Next
                                     </Button>
                                     <Button
-                                        onClick={() => setCurrentPage(totalPages)}
-                                        disabled={currentPage === totalPages || loading}
+                                        onClick={() =>
+                                            setCurrentPage(totalPages)
+                                        }
+                                        disabled={
+                                            currentPage === totalPages ||
+                                            loading
+                                        }
                                         variant="outline"
                                         size="sm"
                                     >
@@ -408,50 +479,94 @@ pages.push('...');
                             </DialogHeader>
                             <div className="grid gap-4">
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">ID:</div>
-                                    <div className="text-sm">{selectedStudent.id}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        ID:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.id}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">First Name:</div>
-                                    <div className="text-sm">{selectedStudent.first_name || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        First Name:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.first_name || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Last Name:</div>
-                                    <div className="text-sm">{selectedStudent.last_name || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Last Name:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.last_name || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Email:</div>
-                                    <div className="text-sm">{selectedStudent.email || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Email:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.email || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Gender:</div>
-                                    <div className="text-sm">{selectedStudent.gender || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Gender:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.gender || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Birthday:</div>
-                                    <div className="text-sm">{selectedStudent.birthday || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Birthday:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.birthday || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Address:</div>
-                                    <div className="text-sm">{selectedStudent.address || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Address:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.address || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Phone:</div>
-                                    <div className="text-sm">{selectedStudent.number || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Phone:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.number || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Program:</div>
-                                    <div className="text-sm">{selectedStudent.program || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Program:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.program || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Year Level:</div>
-                                    <div className="text-sm">{selectedStudent.yr_level || 'N/A'}</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Year Level:
+                                    </div>
+                                    <div className="text-sm">
+                                        {selectedStudent.yr_level || 'N/A'}
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <div className="text-sm font-semibold text-gray-600">Created:</div>
+                                    <div className="text-sm font-semibold text-gray-600">
+                                        Created:
+                                    </div>
                                     <div className="text-sm">
                                         {selectedStudent.created_at
-                                            ? new Date(selectedStudent.created_at).toLocaleDateString()
+                                            ? new Date(
+                                                  selectedStudent.created_at,
+                                              ).toLocaleDateString()
                                             : 'N/A'}
                                     </div>
                                 </div>
@@ -459,14 +574,25 @@ pages.push('...');
                             <div className="flex gap-2 pt-4">
                                 <Button
                                     variant="destructive"
-                                    onClick={() => selectedStudent.id && handleDeleteStudent(selectedStudent.id)}
+                                    onClick={() =>
+                                        selectedStudent.id &&
+                                        handleDeleteStudent(selectedStudent.id)
+                                    }
                                     disabled={deleting !== null}
                                     className="flex-1"
                                 >
-                                    {deleting ? <Spinner className="mr-2 h-4 w-4" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                                    {deleting ? (
+                                        <Spinner className="mr-2 h-4 w-4" />
+                                    ) : (
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                    )}
                                     Delete Student
                                 </Button>
-                                <Button variant="outline" onClick={() => setShowModal(false)} className="flex-1">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setShowModal(false)}
+                                    className="flex-1"
+                                >
                                     Close
                                 </Button>
                             </div>
@@ -480,41 +606,72 @@ pages.push('...');
                         <DialogHeader>
                             <DialogTitle>Add New Student</DialogTitle>
                         </DialogHeader>
-                        <form onSubmit={handleAddStudent} className="grid gap-4">
+                        <form
+                            onSubmit={handleAddStudent}
+                            className="grid gap-4"
+                        >
                             <div>
-                                <label className="text-sm font-medium">First Name *</label>
+                                <label className="text-sm font-medium">
+                                    First Name *
+                                </label>
                                 <Input
                                     required
                                     value={formData.first_name}
-                                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            first_name: e.target.value,
+                                        })
+                                    }
                                     placeholder="First name"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Last Name *</label>
+                                <label className="text-sm font-medium">
+                                    Last Name *
+                                </label>
                                 <Input
                                     required
                                     value={formData.last_name}
-                                    onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            last_name: e.target.value,
+                                        })
+                                    }
                                     placeholder="Last name"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Email *</label>
+                                <label className="text-sm font-medium">
+                                    Email *
+                                </label>
                                 <Input
                                     required
                                     type="email"
                                     value={formData.email}
-                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            email: e.target.value,
+                                        })
+                                    }
                                     placeholder="Email"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Gender *</label>
+                                <label className="text-sm font-medium">
+                                    Gender *
+                                </label>
                                 <select
                                     required
                                     value={formData.gender}
-                                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            gender: e.target.value,
+                                        })
+                                    }
                                     className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                 >
                                     <option value="male">Male</option>
@@ -522,38 +679,66 @@ pages.push('...');
                                 </select>
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Birthday *</label>
+                                <label className="text-sm font-medium">
+                                    Birthday *
+                                </label>
                                 <Input
                                     required
                                     type="date"
                                     value={formData.birthday}
-                                    onChange={(e) => setFormData({ ...formData, birthday: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            birthday: e.target.value,
+                                        })
+                                    }
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Address *</label>
+                                <label className="text-sm font-medium">
+                                    Address *
+                                </label>
                                 <Input
                                     required
                                     value={formData.address}
-                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            address: e.target.value,
+                                        })
+                                    }
                                     placeholder="Address"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Phone Number *</label>
+                                <label className="text-sm font-medium">
+                                    Phone Number *
+                                </label>
                                 <Input
                                     required
                                     value={formData.number}
-                                    onChange={(e) => setFormData({ ...formData, number: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            number: e.target.value,
+                                        })
+                                    }
                                     placeholder="Phone number"
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Program *</label>
+                                <label className="text-sm font-medium">
+                                    Program *
+                                </label>
                                 <select
                                     required
                                     value={formData.program}
-                                    onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            program: e.target.value,
+                                        })
+                                    }
                                     className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                 >
                                     <option value="BSIS">BSIS</option>
@@ -562,11 +747,18 @@ pages.push('...');
                                 </select>
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Year Level *</label>
+                                <label className="text-sm font-medium">
+                                    Year Level *
+                                </label>
                                 <select
                                     required
                                     value={formData.yr_level}
-                                    onChange={(e) => setFormData({ ...formData, yr_level: e.target.value })}
+                                    onChange={(e) =>
+                                        setFormData({
+                                            ...formData,
+                                            yr_level: e.target.value,
+                                        })
+                                    }
                                     className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                                 >
                                     <option value="1">1</option>
@@ -581,11 +773,24 @@ pages.push('...');
                                 </div>
                             )}
                             <div className="flex gap-2 pt-4">
-                                <Button type="submit" disabled={submitting} className="flex-1">
-                                    {submitting ? <Spinner className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
+                                <Button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="flex-1"
+                                >
+                                    {submitting ? (
+                                        <Spinner className="mr-2 h-4 w-4" />
+                                    ) : (
+                                        <Plus className="mr-2 h-4 w-4" />
+                                    )}
                                     Add Student
                                 </Button>
-                                <Button type="button" variant="outline" onClick={() => setShowAddModal(false)} className="flex-1">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setShowAddModal(false)}
+                                    className="flex-1"
+                                >
                                     Cancel
                                 </Button>
                             </div>
@@ -594,14 +799,18 @@ pages.push('...');
                 </Dialog>
 
                 {/* Delete Confirmation Dialog */}
-                <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                <Dialog
+                    open={showDeleteConfirm}
+                    onOpenChange={setShowDeleteConfirm}
+                >
                     <DialogContent className="max-w-sm">
                         <DialogHeader>
                             <DialogTitle>Delete Student</DialogTitle>
                         </DialogHeader>
                         <div className="space-y-4">
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Are you sure you want to delete this student? This action cannot be undone.
+                                Are you sure you want to delete this student?
+                                This action cannot be undone.
                             </p>
                         </div>
                         <div className="flex gap-2 pt-4">
@@ -611,15 +820,19 @@ pages.push('...');
                                 disabled={deleting !== null}
                                 className="flex-1"
                             >
-                                {deleting ? <Spinner className="mr-2 h-4 w-4" /> : <Trash2 className="mr-2 h-4 w-4" />}
+                                {deleting ? (
+                                    <Spinner className="mr-2 h-4 w-4" />
+                                ) : (
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                )}
                                 Delete
                             </Button>
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 onClick={() => {
                                     setShowDeleteConfirm(false);
                                     setStudentToDelete(null);
-                                }} 
+                                }}
                                 className="flex-1"
                                 disabled={deleting !== null}
                             >

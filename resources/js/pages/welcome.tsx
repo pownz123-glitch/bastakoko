@@ -1,7 +1,5 @@
-import React from 'react'
+import React from 'react';
 
 export default function welcome() {
-  return (
-    <div>bayot grant justin </div>
-  )
+    return <div>bayot grant justin </div>;
 }
