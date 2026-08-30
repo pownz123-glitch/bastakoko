@@ -1,11 +1,11 @@
 import { Head } from '@inertiajs/react';
+import { Trash2, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { Trash2, Plus } from 'lucide-react';
 
 interface Student {
     id: number;
@@ -64,18 +64,16 @@ export default function Students() {
     const [studentToDelete, setStudentToDelete] = useState<number | null>(null);
     const itemsPerPage = 10;
 
-    useEffect(() => {
-        fetchStudents();
-    }, []);
-
     const fetchStudents = async () => {
         try {
             setLoading(true);
             setError(null);
             const response = await fetch('/api/students');
+
             if (!response.ok) {
                 throw new Error('Failed to fetch students');
             }
+
             const data = await response.json();
             setStudentsList(data);
             setCurrentPage(1);
@@ -86,8 +84,14 @@ export default function Students() {
         }
     };
 
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchStudents();
+    }, []);
+
     const handleAddStudent = async (e: React.FormEvent) => {
         e.preventDefault();
+
         try {
             setSubmitting(true);
             setError(null);
@@ -101,6 +105,7 @@ export default function Students() {
             
             if (!response.ok) {
                 const errorData = await response.json();
+
                 throw new Error(errorData.message || 'Failed to add student');
             }
             
@@ -121,7 +126,9 @@ export default function Students() {
     };
 
     const confirmDelete = async () => {
-        if (!studentToDelete) return;
+        if (!studentToDelete) {
+return;
+}
         
         try {
             setDeleting(studentToDelete);
@@ -146,9 +153,12 @@ export default function Students() {
     };
 
     const filteredStudents = studentsList.filter((student) => {
-        if (!searchQuery.trim()) return true;
+        if (!searchQuery.trim()) {
+return true;
+}
         
         const query = searchQuery.toLowerCase();
+
         switch (searchType) {
             case 'name':
                 return (
@@ -323,7 +333,7 @@ export default function Students() {
                                             const pages = [];
                                             const maxButtons = 5;
                                             let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-                                            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+                                            const endPage = Math.min(totalPages, startPage + maxButtons - 1);
                                             
                                             if (endPage - startPage < maxButtons - 1) {
                                                 startPage = Math.max(1, endPage - maxButtons + 1);
@@ -331,7 +341,10 @@ export default function Students() {
                                             
                                             if (startPage > 1) {
                                                 pages.push(1);
-                                                if (startPage > 2) pages.push('...');
+
+                                                if (startPage > 2) {
+pages.push('...');
+}
                                             }
                                             
                                             for (let i = startPage; i <= endPage; i++) {
@@ -339,7 +352,10 @@ export default function Students() {
                                             }
                                             
                                             if (endPage < totalPages) {
-                                                if (endPage < totalPages - 1) pages.push('...');
+                                                if (endPage < totalPages - 1) {
+pages.push('...');
+}
+
                                                 pages.push(totalPages);
                                             }
                                             
