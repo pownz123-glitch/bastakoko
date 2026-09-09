@@ -11,7 +11,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/students', function () {
         return response()->json(Student::all());
     })->name('students.index');
-    
+
     Route::post('/api/students', function () {
         $validated = request()->validate([
             'first_name' => 'required|string|max:255',
@@ -24,13 +24,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'number' => 'required|string',
             'yr_level' => 'required|string',
         ]);
-        
+
         $student = Student::create($validated);
+
         return response()->json($student, 201);
     })->name('students.store');
-    
+
+    Route::put('/api/students/{student}', function (Student $student) {
+        $validated = request()->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email,'.$student->id,
+            'program' => 'required|string',
+            'gender' => 'required|string',
+            'birthday' => 'required|date',
+            'address' => 'required|string',
+            'number' => 'required|string',
+            'yr_level' => 'required|string',
+        ]);
+
+        $student->update($validated);
+
+        return response()->json($student->fresh());
+    })->name('students.update');
+
     Route::delete('/api/students/{id}', function (Student $id) {
         $id->delete();
+
         return response()->json(['message' => 'Student deleted'], 200);
     })->name('students.destroy');
 });

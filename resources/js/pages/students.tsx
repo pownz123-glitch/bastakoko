@@ -1,5 +1,5 @@
 import { Head } from '@inertiajs/react';
-import { Trash2, Plus } from 'lucide-react';
+import { Pencil, Trash2, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -61,6 +61,7 @@ export default function Students() {
     );
     const [showModal, setShowModal] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
+    const [editingStudent, setEditingStudent] = useState<Student | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchType, setSearchType] = useState<
         'name' | 'id' | 'program' | 'year'
@@ -98,29 +99,69 @@ export default function Students() {
         fetchStudents();
     }, []);
 
-    const handleAddStudent = async (e: React.FormEvent) => {
+    const openAddModal = () => {
+        setEditingStudent(null);
+        setFormData(initialFormData);
+        setShowAddModal(true);
+    };
+
+    const openEditModal = (student: Student) => {
+        setEditingStudent(student);
+        setFormData({
+            first_name: student.first_name,
+            last_name: student.last_name,
+            email: student.email || '',
+            program: student.program || '',
+            gender: student.gender || '',
+            birthday: student.birthday?.split('T')[0] || '',
+            address: student.address || '',
+            number: student.number || '',
+            yr_level: student.yr_level || '',
+        });
+        setShowModal(false);
+        setShowAddModal(true);
+    };
+
+    const handleSaveStudent = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
             setSubmitting(true);
             setError(null);
-            const response = await fetch('/api/students', {
-                method: 'POST',
+            const response = await fetch(
+                editingStudent
+                    ? `/api/students/${editingStudent.id}`
+                    : '/api/students',
+                {
+                method: editingStudent ? 'PUT' : 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
-            });
+                },
+            );
 
             if (!response.ok) {
                 const errorData = await response.json();
 
-                throw new Error(errorData.message || 'Failed to add student');
+                throw new Error(
+                    errorData.message ||
+                        `Failed to ${editingStudent ? 'update' : 'add'} student`,
+                );
             }
 
-            const newStudent = await response.json();
-            setStudentsList([...studentsList, newStudent]);
+            const savedStudent = await response.json();
+            setStudentsList(
+                editingStudent
+                    ? studentsList.map((student) =>
+                          student.id === savedStudent.id
+                              ? savedStudent
+                              : student,
+                      )
+                    : [...studentsList, savedStudent],
+            );
             setFormData(initialFormData);
+            setEditingStudent(null);
             setShowAddModal(false);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
@@ -206,7 +247,7 @@ export default function Students() {
                     </div>
                     <div className="flex gap-2">
                         <Button
-                            onClick={() => setShowAddModal(true)}
+                            onClick={openAddModal}
                             className="gap-2"
                             disabled={submitting}
                         >
@@ -304,6 +345,17 @@ export default function Students() {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            openEditModal(student);
+                                                        }}
+                                                    >
+                                                        <Pencil className="mr-2 h-4 w-4" />
+                                                        Edit
+                                                    </Button>
                                             <Button size="sm" variant="outline">
                                                 View Details
                                             </Button>
@@ -573,6 +625,14 @@ export default function Students() {
                             </div>
                             <div className="flex gap-2 pt-4">
                                 <Button
+                                    variant="outline"
+                                    onClick={() => openEditModal(selectedStudent)}
+                                    className="flex-1"
+                                >
+                                    <Pencil className="mr-2 h-4 w-4" />
+                                    Edit
+                                </Button>
+                                <Button
                                     variant="destructive"
                                     onClick={() =>
                                         selectedStudent.id &&
@@ -604,10 +664,14 @@ export default function Students() {
                 <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
                     <DialogContent className="max-w-md">
                         <DialogHeader>
-                            <DialogTitle>Add New Student</DialogTitle>
+                            <DialogTitle>
+                                {editingStudent
+                                    ? 'Edit Student'
+                                    : 'Add New Student'}
+                            </DialogTitle>
                         </DialogHeader>
                         <form
-                            onSubmit={handleAddStudent}
+                            onSubmit={handleSaveStudent}
                             className="grid gap-4"
                         >
                             <div>
@@ -783,7 +847,9 @@ export default function Students() {
                                     ) : (
                                         <Plus className="mr-2 h-4 w-4" />
                                     )}
-                                    Add Student
+                                    {editingStudent
+                                        ? 'Save Changes'
+                                        : 'Add Student'}
                                 </Button>
                                 <Button
                                     type="button"
